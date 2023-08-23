@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: clusterip-service
+spec:
+  type: ClusterIP
+  selector:
+    app: clusterip-nginx
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: dep-nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: clusterip-nginx
+  template:
+    metadata:
+      labels:
+        app: clusterip-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: clusterip-service02
+spec:
+  type: ClusterIP
+  selector:
+    app: clusterip-service02-pods
+  ports:
+    - port: 8000
+      targetPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clusterip-service02-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clusterip-service02-pods
+  template:
+    metadata:
+      labels:
+        app: clusterip-service02-pods
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
